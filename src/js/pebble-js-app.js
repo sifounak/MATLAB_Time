@@ -79,7 +79,7 @@ Pebble.addEventListener('appmessage',
 );
 
 Pebble.addEventListener('showConfiguration', function() {
-  var url = 'http://sifounak.github.io/MATLAB_Watchface';
+  var url = 'http://sifounak.github.io/MATLAB_Time';
 
   console.log('Showing configuration page: ' + url);
 

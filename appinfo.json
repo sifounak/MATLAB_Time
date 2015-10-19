@@ -19,7 +19,7 @@
         "configurable"
     ],
     "companyName": "Adam Sifounakis",
-    "longName": "MATLAB Watchface",
+    "longName": "MATLAB Time",
     "projectType": "native",
     "resources": {
         "media": [
@@ -52,7 +52,7 @@
         ]
     },
     "sdkVersion": "3",
-    "shortName": "MATLAB Watchface",
+    "shortName": "MATLAB Time",
     "targetPlatforms": [
         "basalt"
     ],
