@@ -1,8 +1,8 @@
 {
-  "name": "square-config",
+  "name": "MATLAB_Watchface",
   "version": "0.0.0",
   "authors": [
-    "turnervink <turner.vink@me.com>"
+    "Adam Sifounakis <sifounak@gmail.com>"
   ],
   "license": "MIT",
   "ignore": [
