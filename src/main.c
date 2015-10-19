@@ -256,7 +256,7 @@ static void static_layer_draw(Layer *layer, GContext *ctx) {
 		}
 	#endif
 
-	graphics_fill_rect(ctx, GRect(2, 92, 140, 2), 0, GCornerNone); // Draw static bar
+	graphics_fill_rect(ctx, GRect(2, 127, 140, 2), 0, GCornerNone); // Draw static bar
 }
 
 static void update_layers() {
