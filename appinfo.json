@@ -1,0 +1,64 @@
+{
+    "appKeys": {
+        "KEY_CONDITIONS": 4,
+        "KEY_TEMPERATURE": 2,
+        "KEY_TEMPERATURE_IN_C": 3,
+        "backgroundColor": 7,
+        "invertColors": 1,
+        "reflectBatt": 12,
+        "shakeWeather": 5,
+        "showBluetooth": 11,
+        "showWeather": 8,
+        "textColor": 0,
+        "useCelsius": 6,
+        "vibeConnect": 10,
+        "vibeDisconnect": 9
+    },
+    "capabilities": [
+        "location",
+        "configurable"
+    ],
+    "companyName": "Adam Sifounakis",
+    "longName": "MATLAB Watchface",
+    "projectType": "native",
+    "resources": {
+        "media": [
+            {
+                "file": "images/MATLAB_Icon.png",
+                "menuIcon": true,
+                "name": "MATLAB_ICON",
+                "type": "png"
+            },
+            {
+                "file": "data/Logo_Animation.png",
+                "name": "LOGO_ANIMATION",
+                "type": "raw"
+            },
+            {
+                "file": "fonts/MATLAB.ttf",
+                "name": "FONT_MATLAB_34",
+                "type": "font"
+            },
+            {
+                "file": "fonts/MATLAB.ttf",
+                "name": "FONT_MATLAB_22",
+                "type": "font"
+            },
+            {
+                "file": "fonts/MATLAB.ttf",
+                "name": "FONT_MATLAB_14",
+                "type": "font"
+            }
+        ]
+    },
+    "sdkVersion": "3",
+    "shortName": "MATLAB Watchface",
+    "targetPlatforms": [
+        "basalt"
+    ],
+    "uuid": "cb332373-4ee5-4c5c-8912-4f62af2d756c",
+    "versionLabel": "0.3",
+    "watchapp": {
+        "watchface": true
+    }
+}
