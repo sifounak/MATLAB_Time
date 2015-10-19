@@ -11,14 +11,10 @@
 
 	<div class='item-container'>
 		<div class='item-container-content'>
-			<div class='item'>
-				Choose your watchface settings.
-			</div>
-		</div>
-	</div>
-
-	<div class='item-container'>
-		<div class='item-container-content'>
+			<label class='item'>
+				Weather
+				<input id='showWeather' type='checkbox' class='item-toggle' name='toggle-1' checked>
+			</label>
 			<label class='item'>
 				Use Celsius
 				<input id='useCelsius' type='checkbox' class='item-checkbox'>
@@ -32,15 +28,38 @@
 	</div>
 
 	<div class='item-container'>
+		<div class='item-container-content'>
+			<label class='item'>
+				Vibrate on Bluetooth Reconnect
+				<input id='vibeConnect' type='checkbox' class='item-toggle' name='toggle-1' checked>
+			</label>
+			<label class='item'>
+				Vibrate on Bluetooth Disconnect
+				<input id='vibeDisconnect' type='checkbox' class='item-toggle' name='toggle-1' checked>
+			</label>
+		</div>
+	</div>
+
+	<div class='item-container'>
+		<div class='item-container-content'>
+			<label class='item'>
+				Bar shows battery level
+				<input id='reflectBatt' type='checkbox' class='item-checkbox' checked>
+			</label>
+		</div>
+	</div>
+
+	<div class='item-container'>
 		<div class='item-container-header'>Pebble Time and Pebble Time Steel</div>
 		<div class='item-container-content'>
 			<label class='item'>
 				Text Colour
-				<input id='textColorPicker' type='text' class='item-color item-color-normal' value='0xFFFFFF'>
+				<input id='textColorPicker' type='text' class='item-color item-color-sunny' value='0xFFFFFF'>
 			</label>
-		</div>
-		<div class='item-container-footer'>
-			Background colour is selected automatically
+			<label class='item'>
+				Background Colour
+				<input id='backgroundColorPicker' type='text' class='item-color item-color-sunny' value='0x000000'>
+			</label>
 		</div>
 	</div>
 
