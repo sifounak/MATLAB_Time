@@ -568,8 +568,6 @@ static void main_window_unload(Window *window) {
   bitmap_layer_destroy(s_logo_bitmap_layer);
   gbitmap_sequence_destroy(s_logo_sequence);
   gbitmap_destroy(s_logo_bitmap);
-  
-  window_destroy(s_main_window);
 }
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
