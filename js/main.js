@@ -40,23 +40,23 @@ function getAndStoreConfigData() {
 	var options = {
 		backgroundColor: $backgroundColorPicker.val(),
 		textColor: $textColorPicker.val(),
-		rotateLogo: $textColorPicker.val(),
+		//rotateLogo: $textColorPicker.val(),
 		reflectBatt: $reflectBatt[0].checked,
 		showBattPct: $showBattPct[0].checked,
 		vibeDisconnect: $vibeDisconnect[0].checked,
 		vibeConnect: $vibeConnect[0].checked,
-		tempUnits: $tempUnits.val(),
+		//tempUnits: $tempUnits.val(),
 		showConditions: $showConditions[0].checked
 	};
 	
 	localStorage.backgroundColor = options.backgroundColor;
 	localStorage.textColor = options.textColor;
-	localStorage.rotateLogo = options.rotateLogo;
+	//localStorage.rotateLogo = options.rotateLogo;
 	localStorage.reflectBatt = options.reflectBatt;
 	localStorage.showBattPct = options.showBattPct;
 	localStorage.vibeDisconnect = options.vibeDisconnect;
 	localStorage.vibeConnect = options.vibeConnect;
-	localStorage.tempUnits = options.tempUnits;
+	//localStorage.tempUnits = options.tempUnits;
 	localStorage.showConditions = options.showConditions;
 	
 	console.log('Got options: ' + JSON.stringify(options));
