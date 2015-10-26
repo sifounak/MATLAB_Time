@@ -25,14 +25,16 @@
 	
 	<div class='item-container'>
 		<div class='item-container-header'>Logo Settings</div>
-		<div class="ui-field-contain">
-			<label for="select-native-4">Rotate Logo</label>
-			<select name="temp_type" id="temp_type">
-				<option value="0">Off</option>
-				<option value="1">Every Minute</option>
-				<option value="2">Every Hour</option>
-				<option value="3">On Shake</option>
-			</select>
+		<div class='item-container-content'>
+			<label class='item' for="select-native-2">
+				Rotate Logo
+				<select name="rotateLogo" id="rotateLogo" class="item-select">
+					<option class="item-select-option" value="0">Off</option>
+					<option class="item-select-option" value="1">Every Minute</option>
+					<option class="item-select-option" value="2">Every Hour</option>
+					<option class="item-select-option" value="3" selected>On Shake</option>
+				</select>
+			</label>
 		</div>
 	</div>
 	
@@ -51,30 +53,45 @@
 	</div>
 	
 	<div class='item-container'>
-	<div class='item-container-header'>Connection Settings</div>
+		<div class='item-container-header'>Connection Settings</div>
 		<div class='item-container-content'>
 			<label class='item'>
 				Vibrate on Bluetooth Disconnect
-				<input id='vibeDisconnect' type='checkbox' class='item-checkbox' name='item-checkbox-vibDisconnect' checked>
+				<input id='vibeDisconnect' type='checkbox' class='item-checkbox' checked>
 			</label>
 			<label class='item'>
 				Vibrate on Bluetooth Reconnect
-				<input id='vibeConnect' type='checkbox' class='item-checkbox' name='item-checkbox-vibeConnect' checked>
+				<input id='vibeConnect' type='checkbox' class='item-checkbox' checked>
 			</label>
 		</div>
 	</div>
-	
-	<div class='item-container-header'>Weather Settings</div>
-	<div class='item-container'>
-		<div class="ui-field-contain">
-			<label for="select-native-2">Show Temperature</label>
-			<select name="tempUnits" id="temp_type">
-				<option value="0">Off</option>
-				<option value="1">In Celsius</option>
-				<option value="2">In Fahrenheit</option>
-			</select>
+	<!--
+	<div class="item-container">
+		<div class="item-container-header">Multiple Items</div>
+			<div class="item-container-content">
+				<label class="item" for="select-native-2">Show Temperature</label>
+					Show Temperature
+					<select name="select-1" dir='rtl' class="item-select">
+						<option class="item-select-option">Off</option>
+						<option class="item-select-option" selected>In Celsius</option>
+						<option class="item-select-option">In Fahrenheit</option>
+					</select>
+				</label>
+			</div>
 		</div>
-		<div class='item-container-content'>
+	</div>
+	-->
+	
+	<div class='item-container'>
+		<div class="item-container-header">Weather Settings</div>
+		<div class="item-container-content">
+			<label class='item' for="select-native-2">Show Temperature
+				<select name="tempUnits" id="tempUnits" class="item-select">
+					<option class="item-select-option" value="0">Off</option>
+					<option class="item-select-option" value="1">In Celsius</option>
+					<option class="item-select-option" value="2" selected>In Fahrenheit</option>
+				</select>
+			</label>
 			<label class='item'>
 				Show Weather Conditions Text
 				<input id='showConditions' type='checkbox' class='item-checkbox' name='item-checkbox-conditions' checked>
