@@ -24,6 +24,18 @@ function loadOptions() {
 	var $vibeDisconnect = $('#vibeDisconnect');
 	var $tempUnits = $('#tempUnits');
 	var $showConditions = $('#showConditions');
+	
+	if(localStorage.backgroundColor) {
+		$textColorPicker[0].value = localStorage.textColorPicker;
+		$backgroundColorPicker[0].value = localStorage.backgroundColorPicker;
+		$rotateLogo[0].value = localStorage.rotateLogo;
+		$reflectBatt[0].checked = localStorage.reflectBatt == true;
+		$showBattPct[0].checked = localStorage.showBattPct == true;
+		$vibeConnect[0].checked = localStorage.vibeConnect == true;
+		$vibeDisconnect[0].checked = localStorage.vibeDisconnect == true;
+		$tempUnits[0].value = localStorage.tempUnits;
+		$showConditions[0].checked = localStorage.showConditions == true;
+	}
 }
 
 function getAndStoreConfigData() {
