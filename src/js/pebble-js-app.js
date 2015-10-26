@@ -93,15 +93,16 @@ Pebble.addEventListener('webviewclosed', function(e) {
 
   if (configData.textColor) {
     Pebble.sendAppMessage({
-      textColor: parseInt(configData.textColor, 16),
       backgroundColor: parseInt(configData.backgroundColor, 16),
-      invertColors: configData.invertColors ? 1 : 0,
-      showWeather: configData.showWeather ? 1 : 0,
-      shakeWeather: configData.shakeWeather ? 1 : 0,
-      useCelsius: configData.useCelsius ? 1 : 0,
+      textColor: parseInt(configData.textColor, 16),
+      rotateLogo: parseInt(configData.rotateLogo, 10),
+      reflectBatt: configData.reflectBatt ? 1 : 0,
+      showBattPct: configData.showBattPct ? 1 : 0,
       vibeDisconnect: configData.vibeDisconnect ? 1 : 0,
       vibeConnect: configData.vibeConnect ? 1 : 0,
-      reflectBatt: configData.reflectBatt ? 1 : 0
+      invertColors: configData.invertColors ? 1 : 0,
+      tempUnits: parseInt(configData.showWeather, 10),
+      showConditions: configData.showConditions ? 1 : 0
     }, function() {
       console.log('Send successful!');
     }, function() {

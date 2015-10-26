@@ -1,18 +1,17 @@
 {
     "appKeys": {
-        "KEY_CONDITIONS": 4,
-        "KEY_TEMPERATURE": 2,
-        "KEY_TEMPERATURE_IN_C": 3,
-        "backgroundColor": 7,
-        "invertColors": 1,
-        "reflectBatt": 12,
-        "shakeWeather": 5,
-        "showBluetooth": 11,
-        "showWeather": 8,
-        "textColor": 0,
-        "useCelsius": 6,
-        "vibeConnect": 10,
-        "vibeDisconnect": 9
+        "KEY_CONDITIONS": 11,
+        "KEY_TEMPERATURE": 9,
+        "KEY_TEMPERATURE_IN_C": 10,
+        "backgroundColor": 0,
+        "reflectBatt": 3,
+        "rotateLogo": 2,
+        "showBattPct": 4,
+        "showConditions": 8,
+        "tempUnits": 7,
+        "textColor": 1,
+        "vibeConnect": 6,
+        "vibeDisconnect": 5
     },
     "capabilities": [
         "location",

@@ -1,28 +1,35 @@
 #include <pebble.h>
 
-#define KEY_TEXT_COLOR 0
-#define KEY_INVERT_COLORS 1
-#define KEY_TEMPERATURE 2
-#define KEY_TEMPERATURE_IN_C 3
-#define KEY_CONDITIONS 4
-#define KEY_SHAKE_FOR_WEATHER 5
-#define KEY_USE_CELSIUS 6
-#define KEY_BACKGROUND_COLOR 7
-#define KEY_SHOW_WEATHER 8
-#define KEY_VIBE_ON_DISCONNECT 9
-#define KEY_VIBE_ON_CONNECT 10
-#define KEY_REFLECT_BATT 12
+#define KEY_BACKGROUND_COLOR 0
+#define KEY_TEXT_COLOR 1
+#define KEY_ROTATE_LOGO 2
+#define KEY_REFLECT_BATT 3
+#define KEY_SHOW_BATT_PCT 4
+#define KEY_VIBE_ON_DISCONNECT 5
+#define KEY_VIBE_ON_CONNECT 6
+#define KEY_TEMP_UNITS 7
+#define KEY_SHOW_CONDITIONS 8
+
+#define KEY_TEMPERATURE 9
+#define KEY_TEMPERATURE_IN_C 10
+#define KEY_CONDITIONS 11
 
 static Window *s_main_window;
 static TextLayer *s_time_layer, *s_date_layer, *s_charge_layer, *s_bluetooth_layer, *s_temp_layer, *s_conditions_layer;
 static GFont s_time_font, s_date_font, s_weather_font;
 static Layer *s_batt_layer, *s_static_layer, *s_weather_layer, *s_weather_layer_unanimated;
-static bool use_celsius = 0;
 static bool shake_for_weather = 0;
-static bool show_weather = 1;
+
+static bool rotate_logo_minute = 0;
+static bool rotate_logo_hour = 0;
+static bool rotate_logo_shake = 1;
+static bool reflect_batt = 1;
+static bool show_batt_pct = 1;
 static bool vibe_on_disconnect = 1;
 static bool vibe_on_connect = 1;
-static bool reflect_batt = 1;
+static bool show_temp = 1;
+static bool use_celsius = 0;
+static bool show_conditions = 1;
 
 static TextLayer *s_myweather_layer, *s_battery_text_layer;
 static GBitmap *s_background_bitmap, *s_logo_bitmap;
@@ -165,18 +172,31 @@ static void static_layer_draw(Layer *layer, GContext *ctx) {
   graphics_fill_rect(ctx, GRect(2, 127, 140, 2), 0, GCornerNone); // Draw static bar
 }
 
-static void update_layers() {
-  if (show_weather == 0) {
-    layer_set_hidden(s_weather_layer, true);
-    //layer_set_hidden(s_weather_layer_unanimated, true);
-  } else {
-    if (shake_for_weather == 0) {
-      //layer_set_hidden(s_weather_layer, true);
-      //layer_set_hidden(s_weather_layer_unanimated, false);
-    } else {
-      layer_set_hidden(s_weather_layer, false);
-      //layer_set_hidden(s_weather_layer_unanimated, true);
-    }
+static void update_info_layers() {
+  
+  if (show_temp == 0) {
+    layer_set_hidden(text_layer_get_layer(s_temp_layer), true);
+  }
+  if (show_conditions == 0) {
+    layer_set_hidden(text_layer_get_layer(s_conditions_layer), true);
+  }
+  if (show_batt_pct == 0) {
+    layer_set_hidden(text_layer_get_layer(s_battery_text_layer), true);
+  }
+  
+  text_layer_set_text_alignment(s_temp_layer        , GTextAlignmentLeft  );
+  text_layer_set_text_alignment(s_conditions_layer  , GTextAlignmentCenter);
+  text_layer_set_text_alignment(s_battery_text_layer, GTextAlignmentRight );
+  if (show_conditions + show_batt_pct < 1) {
+    text_layer_set_text_alignment(s_temp_layer, GTextAlignmentCenter);
+  }
+  if (show_temp + show_conditions < 1) {
+    text_layer_set_text_alignment(s_battery_text_layer, GTextAlignmentCenter);
+  }
+  if ((show_temp == 1) & (show_batt_pct == 0)) {
+    text_layer_set_text_alignment(s_temp_layer, GTextAlignmentRight);
+  } else if ((show_temp == 0) & (show_batt_pct == 1)) {
+    text_layer_set_text_alignment(s_temp_layer, GTextAlignmentLeft );
   }
 }
 
@@ -197,26 +217,22 @@ static void set_background_color(int bgcolor) {
 }
 
 static void inbox_received_handler(DictionaryIterator *iter, void *context) {
+  bool update_info_layers_flag = false;
+  
+  Tuple *background_color_t = dict_find(iter, KEY_BACKGROUND_COLOR);
   Tuple *text_color_t = dict_find(iter, KEY_TEXT_COLOR);
-  Tuple *invert_colors_t = dict_find(iter, KEY_INVERT_COLORS);
+  Tuple *rotate_logo_t = dict_find(iter, KEY_ROTATE_LOGO);
+  Tuple *reflect_batt_t = dict_find(iter, KEY_REFLECT_BATT);
+  Tuple *show_batt_pct_t = dict_find(iter, KEY_SHOW_BATT_PCT);
+  Tuple *vibe_on_disconnect_t = dict_find(iter, KEY_VIBE_ON_DISCONNECT);
+  Tuple *vibe_on_connect_t = dict_find(iter, KEY_VIBE_ON_CONNECT);
+  Tuple *temp_units_t = dict_find(iter, KEY_TEMP_UNITS);
+  Tuple *show_conditions_t = dict_find(iter, KEY_SHOW_CONDITIONS);
   Tuple *temperature_t = dict_find(iter, KEY_TEMPERATURE);
   Tuple *temperature_in_c_t = dict_find(iter, KEY_TEMPERATURE_IN_C);
   Tuple *conditions_t = dict_find(iter, KEY_CONDITIONS);
-  Tuple *shake_for_weather_t = dict_find(iter, KEY_SHAKE_FOR_WEATHER);
-  Tuple *show_weather_t = dict_find(iter, KEY_SHOW_WEATHER);
-  Tuple *use_celsius_t = dict_find(iter, KEY_USE_CELSIUS);
-  Tuple *background_color_t = dict_find(iter, KEY_BACKGROUND_COLOR);
-  Tuple *vibe_on_connect_t = dict_find(iter, KEY_VIBE_ON_CONNECT);
-  Tuple *vibe_on_disconnect_t = dict_find(iter, KEY_VIBE_ON_DISCONNECT);
-  Tuple *reflect_batt_t = dict_find(iter, KEY_REFLECT_BATT);
   
-  if (text_color_t) {
-    int text_color = text_color_t->value->int32;
-    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_TEXT_COLOR received!");
-    persist_write_int(KEY_TEXT_COLOR, text_color);
-    set_text_color(text_color);
-  }
-  
+  // Parse text color
   if (background_color_t) {
     int bg_color = background_color_t->value->int32;
     //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_BACKGROUND_COLOR received!");
@@ -224,66 +240,125 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
     set_background_color(bg_color);
   }
   
-  if (shake_for_weather_t) {
-    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_SHAKE_FOR_WEATHER received!");
-    shake_for_weather = shake_for_weather_t->value->int8;
-    persist_write_int(KEY_SHAKE_FOR_WEATHER, shake_for_weather);
+  // Parse text color
+  if (text_color_t) {
+    int text_color = text_color_t->value->int32;
+    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_TEXT_COLOR received!");
+    persist_write_int(KEY_TEXT_COLOR, text_color);
+    set_text_color(text_color);
   }
   
-  
-  if (show_weather_t) {
-    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_SHOW_WEATHER received!");
-    show_weather = show_weather_t->value->int8;
-    persist_write_int(KEY_SHOW_WEATHER, show_weather);
-  }
-  
-  if (use_celsius_t) {
-    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_USE_CELSIUS received!");
-    use_celsius = use_celsius_t->value->int8;
-    persist_write_int(KEY_USE_CELSIUS, use_celsius);
-    
-    if (temperature_in_c_t) {
-      //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_TEMPERATURE_IN_C received!");
-      snprintf(temp_buffer, sizeof(temp_buffer), "%d C", (int)temperature_in_c_t->value->int32);
+  // Parse rotate logo
+  if (rotate_logo_t) {
+    int rotate_logo_val = rotate_logo_t->value->int8;
+    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_ROTATE_LOGO received!");
+    persist_write_int(KEY_ROTATE_LOGO, rotate_logo_val);
+    rotate_logo_minute = 0;
+    rotate_logo_hour   = 0;
+    rotate_logo_shake  = 0;
+    if (rotate_logo_val == 1) {
+      rotate_logo_minute = 1;
+    } else if (rotate_logo_val == 2) {
+      rotate_logo_hour = 1;
+    } else if (rotate_logo_val == 3) {
+      rotate_logo_shake = 1;
     }
-  } else if (temperature_t) {
-      //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_TEMPERATURE received!");
-      snprintf(temp_buffer, sizeof(temp_buffer), "%d F", (int)temperature_t->value->int32);
-  }
-  text_layer_set_text(s_temp_layer           , temp_buffer);
-  
-  if (conditions_t) {
-    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_CONDITIONS received!");
-    snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", conditions_t->value->cstring);
-    text_layer_set_text(s_conditions_layer           , conditions_buffer);
   }
   
-  
-  if (vibe_on_connect_t) {
-    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_VIBE_ON_CONNECT received!");
-    vibe_on_connect = vibe_on_connect_t->value->int8;
+  // Parse option to make the battery bar reflect the battery percentage
+  if (reflect_batt_t) {
+    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_REFLECT_BATT received!");
+    update_info_layers_flag = true;
+    
+    reflect_batt = reflect_batt_t->value->int8;
+    persist_write_int(KEY_REFLECT_BATT, reflect_batt);
+    
+    if (reflect_batt == 1) {
+      layer_set_hidden(s_static_layer, true);
+      layer_set_hidden(s_batt_layer, false);
+    } else {
+      layer_set_hidden(s_static_layer, false);
+      layer_set_hidden(s_batt_layer, true);
+    }
   }
-
+  
+  // Parse option to show battery percentage text
+  if (show_batt_pct_t) {
+    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_SHOW_BATT_PCT received!");
+    update_info_layers_flag = true;
+    
+    show_batt_pct = show_batt_pct_t->value->int8;
+    persist_write_int(KEY_SHOW_BATT_PCT, show_batt_pct);
+  }
+  
+  // Parse option for vibrate on bluetooth disconnect
   if (vibe_on_disconnect_t) {
     //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_VIBE_ON_DISCONNECT received!");
     vibe_on_disconnect = vibe_on_disconnect_t->value->int8;
   }
-
-  if (reflect_batt_t) {
-    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_REFLECT_BATT received!");
-    reflect_batt = reflect_batt_t->value->int8;
-    persist_write_int(KEY_REFLECT_BATT, reflect_batt);
+  
+  // Parse option for vibrate on bluetooth reconnection
+  if (vibe_on_connect_t) {
+    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_VIBE_ON_CONNECT received!");
+    vibe_on_connect = vibe_on_connect_t->value->int8;
   }
-
-  if (reflect_batt == 1) {
-    layer_set_hidden(s_static_layer, true);
-    layer_set_hidden(s_batt_layer, false);
-  } else {
-    layer_set_hidden(s_static_layer, false);
-    layer_set_hidden(s_batt_layer, true);
+  
+  // Parse temperature settings
+  if (temp_units_t) {
+    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_TEMP_UNITS received!");
+    update_info_layers_flag = true;
+    
+    int temp_units_val = temp_units_t->value->int8;
+    persist_write_int(KEY_TEMP_UNITS, temp_units_val);
+    show_temp   = 0;
+    use_celsius = 0;
+    if (temp_units_val > 0) {
+      show_temp = 1;
+      if (temp_units_val == 1) {
+        use_celsius = 1;
+      }
+    }
   }
-
-  update_layers();
+  
+  // Parse for option to show weather conditions
+  if (show_conditions_t) {
+    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_SHAKE_FOR_WEATHER received!");
+    update_info_layers_flag = true;
+    
+    show_conditions = show_conditions_t->value->int8;
+    persist_write_int(KEY_SHOW_CONDITIONS, show_conditions);
+  }
+  
+  // Parse and update temperature text
+  if (temperature_in_c_t) {
+    if ((show_temp == 1) & (use_celsius == 1)) {
+      //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_TEMPERATURE_IN_C received!");
+      snprintf(temp_buffer, sizeof(temp_buffer), "%d C", (int)temperature_in_c_t->value->int32);
+      text_layer_set_text(s_temp_layer, temp_buffer);
+    }
+  }
+  
+  // Parse and update temperature text
+  if (temperature_t) {
+    if ((show_temp == 1) & (use_celsius == 0)) {
+      //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_TEMPERATURE received!");
+      snprintf(temp_buffer, sizeof(temp_buffer), "%d F", (int)temperature_t->value->int32);
+      text_layer_set_text(s_temp_layer, temp_buffer);
+    }
+  }
+  
+  if (conditions_t) {
+    if (show_conditions == 1) {
+      //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_CONDITIONS received!");
+      snprintf(conditions_buffer, sizeof(conditions_buffer), "%s", conditions_t->value->cstring);
+      text_layer_set_text(s_conditions_layer, conditions_buffer);
+    }
+  }
+  
+  if (update_info_layers_flag) {
+    update_info_layers();
+  }
+  
 }
 
 static void main_window_load(Window *window) {
@@ -398,28 +473,34 @@ static void main_window_load(Window *window) {
 
   // Check for existing keys
   
-  if (persist_exists(KEY_TEXT_COLOR)) {
-      int text_color = persist_read_int(KEY_TEXT_COLOR);
-      APP_LOG(APP_LOG_LEVEL_INFO, "KEY_TEXT_COLOR exists!");
-      set_text_color(text_color);
-    } else {
-      set_text_color(0xFFFFFF); // white
-    }
-  
-    if (persist_exists(KEY_BACKGROUND_COLOR)) {
-      int bg_color = persist_read_int(KEY_BACKGROUND_COLOR);
-      APP_LOG(APP_LOG_LEVEL_INFO, "KEY_BACKGROUND_COLOR exists!");
-      set_background_color(bg_color);
-    } else {
-      set_background_color(0x000000); // black
-    }
-  
-  if (persist_exists(KEY_USE_CELSIUS)) {
-    use_celsius = persist_read_int(KEY_USE_CELSIUS);
+  if (persist_exists(KEY_BACKGROUND_COLOR)) {
+    int bg_color = persist_read_int(KEY_BACKGROUND_COLOR);
+    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_BACKGROUND_COLOR exists!");
+    set_background_color(bg_color);
+  } else {
+    set_background_color(0x000000); // black
   }
   
-  if (persist_exists(KEY_SHAKE_FOR_WEATHER)) {
-    shake_for_weather = persist_read_int(KEY_SHAKE_FOR_WEATHER);
+  if (persist_exists(KEY_TEXT_COLOR)) {
+    int text_color = persist_read_int(KEY_TEXT_COLOR);
+    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_TEXT_COLOR exists!");
+    set_text_color(text_color);
+  } else {
+    set_text_color(0xFFFFFF); // white
+  }
+  
+  if (persist_exists(KEY_ROTATE_LOGO)) {
+    int rotate_logo_val = persist_read_int(KEY_ROTATE_LOGO);
+    rotate_logo_minute = 0;
+    rotate_logo_hour   = 0;
+    rotate_logo_shake  = 0;
+    if (rotate_logo_val == 1) {
+      rotate_logo_minute = 1;
+    } else if (rotate_logo_val == 2) {
+      rotate_logo_hour = 1;
+    } else if (rotate_logo_val == 3) {
+      rotate_logo_shake = 1;
+    }
   }
   
   if (persist_exists(KEY_REFLECT_BATT)) {
@@ -438,14 +519,8 @@ static void main_window_load(Window *window) {
     layer_set_hidden(s_batt_layer, false);
   }
   
-  if (persist_exists(KEY_SHOW_WEATHER)) {
-    show_weather = persist_read_int(KEY_SHOW_WEATHER);
-    
-    if (show_weather == 1) {
-      update_layers();
-    } else {
-      layer_set_hidden(s_weather_layer, true);
-    }
+  if (persist_exists(KEY_SHOW_BATT_PCT)) {
+    show_batt_pct = persist_read_int(KEY_SHOW_BATT_PCT);
   }
   
   bool connected = bluetooth_connection_service_peek();
@@ -454,8 +529,30 @@ static void main_window_load(Window *window) {
   } else {
      layer_set_hidden(text_layer_get_layer(s_bluetooth_layer), true);
   }
-
-  charge_handler(); // Is the battery charging?
+  
+  if (persist_exists(KEY_TEMP_UNITS)) {
+    int temp_units_val = persist_read_int(KEY_TEMP_UNITS);
+    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_TEMP_UNITS received!");
+    persist_write_int(KEY_TEMP_UNITS, temp_units_val);
+    show_temp   = 0;
+    use_celsius = 0;
+    if (temp_units_val > 0) {
+      show_temp = 1;
+      if (temp_units_val == 1) {
+        use_celsius = 1;
+      }
+    }
+  }
+  
+  if (persist_exists(KEY_SHOW_CONDITIONS)) {
+    show_conditions = persist_read_int(KEY_SHOW_CONDITIONS);
+    if (show_conditions == 1) {
+      
+    }
+  }
+  
+  update_info_layers();
+  charge_handler();
   update_time();
 }
 
@@ -484,9 +581,9 @@ static void main_window_unload(Window *window) {
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   update_time();
   
-  if (show_weather == 1) {
-    // Update weather every 30 minutes
-    if(tick_time->tm_min % 30 == 0) {
+  if ((show_temp == 1) | (show_conditions == 1)) {
+    // Update weather every 15 minutes
+    if(tick_time->tm_min % 15 == 0) {
       // Begin dictionary
       DictionaryIterator *iter;
       app_message_outbox_begin(&iter);
@@ -498,15 +595,20 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
       app_message_outbox_send();
     }
   }
+  
+  // Rotate logo every minute or every hour
+  if((rotate_logo_minute == 1) | ((rotate_logo_hour == 1) & (tick_time->tm_min == 0))) {
+    rotate_logo();
+  }
 }
 
 static void tap_handler(AccelAxisType axis, int32_t direction) {
-  if (shake_for_weather == 0) {
-    APP_LOG(APP_LOG_LEVEL_INFO, "Tap! Not animating.");
-    // Do not animate
-  } else {
-    APP_LOG(APP_LOG_LEVEL_INFO, "Tap! Animating");
+  if (rotate_logo_shake == 1) {
+    //APP_LOG(APP_LOG_LEVEL_INFO, "Tap! Animating");
     rotate_logo();
+  } else {
+    //APP_LOG(APP_LOG_LEVEL_INFO, "Tap! Not animating.");
+    // Do not animate
   }
 }
 
