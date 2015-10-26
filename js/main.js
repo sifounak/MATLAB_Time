@@ -29,12 +29,12 @@ function loadOptions() {
 		$textColorPicker[0].value = localStorage.textColor;
 		$backgroundColorPicker[0].value = localStorage.backgroundColor;
 		//$rotateLogo[0].value = localStorage.rotateLogo;
-		$reflectBatt[0].checked = localStorage.reflectBatt == true;
-		$showBattPct[0].checked = localStorage.showBattPct == true;
-		$vibeConnect[0].checked = localStorage.vibeConnect == true;
-		$vibeDisconnect[0].checked = localStorage.vibeDisconnect == true;
+		$reflectBatt[0].checked = localStorage.reflectBatt == 1;
+		$showBattPct[0].checked = localStorage.showBattPct == 1;
+		$vibeConnect[0].checked = localStorage.vibeConnect == 1;
+		$vibeDisconnect[0].checked = localStorage.vibeDisconnect == 1;
 		//$tempUnits[0].value = localStorage.tempUnits;
-		$showConditions[0].checked = localStorage.showConditions == true;
+		$showConditions[0].checked = localStorage.showConditions == 1;
 	}
 }
 
