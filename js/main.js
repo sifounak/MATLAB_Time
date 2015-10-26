@@ -26,8 +26,8 @@ function loadOptions() {
 	var $showConditions = $('#showConditions');
 	
 	if(localStorage.backgroundColor) {
-		$textColorPicker[0].value = localStorage.textColor;
 		$backgroundColorPicker[0].value = localStorage.backgroundColor;
+		$textColorPicker[0].value = localStorage.textColor;
 		//$rotateLogo[0].value = localStorage.rotateLogo;
 		$reflectBatt[0].checked = localStorage.reflectBatt === 'true';
 		$showBattPct[0].checked = localStorage.showBattPct === 'true';
