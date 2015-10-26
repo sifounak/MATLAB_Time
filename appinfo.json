@@ -24,11 +24,6 @@
     "resources": {
         "media": [
             {
-                "file": "data/Logo_Mask.png",
-                "name": "LOGO_MASK",
-                "type": "raw"
-            },
-            {
                 "file": "data/Logo_Animation.png",
                 "name": "LOGO_ANIMATION",
                 "type": "raw"
