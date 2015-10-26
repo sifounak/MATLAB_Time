@@ -20,8 +20,8 @@ function loadOptions() {
 	var $rotateLogo = $('#rotateLogo');
 	var $reflectBatt = $('#reflectBatt');
 	var $showBattPct = $('#showBattPct');
-	var $vibeConnect = $('#vibeConnect');
 	var $vibeDisconnect = $('#vibeDisconnect');
+	var $vibeConnect = $('#vibeConnect');
 	var $tempUnits = $('#tempUnits');
 	var $showConditions = $('#showConditions');
 	
@@ -29,12 +29,12 @@ function loadOptions() {
 		$textColorPicker[0].value = localStorage.textColor;
 		$backgroundColorPicker[0].value = localStorage.backgroundColor;
 		//$rotateLogo[0].value = localStorage.rotateLogo;
-		$reflectBatt[0].checked = localStorage.reflectBatt == 1;
-		$showBattPct[0].checked = localStorage.showBattPct == 1;
-		$vibeConnect[0].checked = localStorage.vibeConnect == 1;
-		$vibeDisconnect[0].checked = localStorage.vibeDisconnect == 1;
+		$reflectBatt[0].checked = localStorage.reflectBatt;
+		$showBattPct[0].checked = localStorage.showBattPct;
+		$vibeDisconnect[0].checked = localStorage.vibeDisconnect;
+		$vibeConnect[0].checked = localStorage.vibeConnect;
 		//$tempUnits[0].value = localStorage.tempUnits;
-		$showConditions[0].checked = localStorage.showConditions == 1;
+		$showConditions[0].checked = localStorage.showConditions;
 	}
 }
 
