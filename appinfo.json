@@ -24,15 +24,20 @@
     "resources": {
         "media": [
             {
-                "file": "images/MATLAB_Icon.png",
-                "menuIcon": true,
-                "name": "MATLAB_ICON",
-                "type": "png"
+                "file": "data/Logo_Mask.png",
+                "name": "LOGO_MASK",
+                "type": "raw"
             },
             {
                 "file": "data/Logo_Animation.png",
                 "name": "LOGO_ANIMATION",
                 "type": "raw"
+            },
+            {
+                "file": "images/MATLAB_Icon.png",
+                "menuIcon": true,
+                "name": "MATLAB_ICON",
+                "type": "png"
             },
             {
                 "file": "fonts/MATLAB.ttf",
