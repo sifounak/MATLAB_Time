@@ -35,6 +35,16 @@ function loadOptions() {
 		$vibeConnect[0].checked = localStorage.vibeConnect === 'true';
 		$tempUnits[0].value = localStorage.tempUnits;
 		$showConditions[0].checked = localStorage.showConditions === 'true';
+	} else {
+		$backgroundColorPicker[0].value = '0x000000';
+		$textColorPicker[0].value = '0xFFFFFF';
+		$rotateLogo[0].value = '3';
+		$reflectBatt[0].checked = true;
+		$showBattPct[0].checked = true;
+		$vibeDisconnect[0].checked = true;
+		$vibeConnect[0].checked = true;
+		$tempUnits[0].value = '2';
+		$showConditions[0].checked = true;
 	}
 }
 
