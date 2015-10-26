@@ -75,7 +75,7 @@ Pebble.addEventListener('appmessage',
     console.log('AppMessage received! Updating weather.');
 
     getWeather();
-  }                     
+  }
 );
 
 Pebble.addEventListener('showConfiguration', function() {
@@ -91,7 +91,7 @@ Pebble.addEventListener('webviewclosed', function(e) {
 
   console.log('Configuration page returned: ' + JSON.stringify(configData));
 
-  if (configData.textColor) {
+  if (configData.backgroundColor) {
     Pebble.sendAppMessage({
       backgroundColor: parseInt(configData.backgroundColor, 16),
       textColor: parseInt(configData.textColor, 16),
@@ -100,8 +100,7 @@ Pebble.addEventListener('webviewclosed', function(e) {
       showBattPct: configData.showBattPct ? 1 : 0,
       vibeDisconnect: configData.vibeDisconnect ? 1 : 0,
       vibeConnect: configData.vibeConnect ? 1 : 0,
-      invertColors: configData.invertColors ? 1 : 0,
-      tempUnits: parseInt(configData.showWeather, 10),
+      tempUnits: parseInt(configData.tempUnits, 10),
       showConditions: configData.showConditions ? 1 : 0
     }, function() {
       console.log('Send successful!');

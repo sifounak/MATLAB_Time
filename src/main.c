@@ -39,7 +39,7 @@ static GBitmapSequence *s_logo_sequence = NULL;
 static char time_buffer[] = "00:00 AM";
 static char date_buffer[] = "WWW  MMM  DD";
 
-static char temp_buffer[6];
+static char temp_buffer_c[6], temp_buffer_f[6];
 static char conditions_buffer[20];
 static char weather_buffer[28];
 
@@ -173,15 +173,17 @@ static void static_layer_draw(Layer *layer, GContext *ctx) {
 }
 
 static void update_info_layers() {
-  
+  layer_set_hidden(text_layer_get_layer(s_temp_layer), false);
+  layer_set_hidden(text_layer_get_layer(s_conditions_layer), false);
+  layer_set_hidden(text_layer_get_layer(s_battery_text_layer), false);
   if (show_temp == 0) {
-    layer_set_hidden(text_layer_get_layer(s_temp_layer), true);
+    layer_set_hidden(text_layer_get_layer(s_temp_layer), true );
   }
   if (show_conditions == 0) {
-    layer_set_hidden(text_layer_get_layer(s_conditions_layer), true);
+    layer_set_hidden(text_layer_get_layer(s_conditions_layer), true );
   }
   if (show_batt_pct == 0) {
-    layer_set_hidden(text_layer_get_layer(s_battery_text_layer), true);
+    layer_set_hidden(text_layer_get_layer(s_battery_text_layer), true );
   }
   
   text_layer_set_text_alignment(s_temp_layer        , GTextAlignmentLeft  );
@@ -190,13 +192,13 @@ static void update_info_layers() {
   if (show_conditions + show_batt_pct < 1) {
     text_layer_set_text_alignment(s_temp_layer, GTextAlignmentCenter);
   }
+  if ((show_temp == 1) & (show_batt_pct == 0)) {
+    text_layer_set_text_alignment(s_conditions_layer, GTextAlignmentRight);
+  } else if ((show_temp == 0) & (show_batt_pct == 1)) {
+    text_layer_set_text_alignment(s_conditions_layer, GTextAlignmentLeft );
+  }
   if (show_temp + show_conditions < 1) {
     text_layer_set_text_alignment(s_battery_text_layer, GTextAlignmentCenter);
-  }
-  if ((show_temp == 1) & (show_batt_pct == 0)) {
-    text_layer_set_text_alignment(s_temp_layer, GTextAlignmentRight);
-  } else if ((show_temp == 0) & (show_batt_pct == 1)) {
-    text_layer_set_text_alignment(s_temp_layer, GTextAlignmentLeft );
   }
 }
 
@@ -316,6 +318,9 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
       show_temp = 1;
       if (temp_units_val == 1) {
         use_celsius = 1;
+        text_layer_set_text(s_temp_layer, temp_buffer_c);
+      } else {
+        text_layer_set_text(s_temp_layer, temp_buffer_f);
       }
     }
   }
@@ -331,20 +336,16 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
   
   // Parse and update temperature text
   if (temperature_in_c_t) {
-    if ((show_temp == 1) & (use_celsius == 1)) {
-      //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_TEMPERATURE_IN_C received!");
-      snprintf(temp_buffer, sizeof(temp_buffer), "%d C", (int)temperature_in_c_t->value->int32);
-      text_layer_set_text(s_temp_layer, temp_buffer);
-    }
+    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_TEMPERATURE_IN_C received!");
+    snprintf(temp_buffer_c, sizeof(temp_buffer_c), "%d C", (int)temperature_in_c_t->value->int32);
+    text_layer_set_text(s_temp_layer, temp_buffer_c);
   }
   
   // Parse and update temperature text
   if (temperature_t) {
-    if ((show_temp == 1) & (use_celsius == 0)) {
-      //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_TEMPERATURE received!");
-      snprintf(temp_buffer, sizeof(temp_buffer), "%d F", (int)temperature_t->value->int32);
-      text_layer_set_text(s_temp_layer, temp_buffer);
-    }
+    //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_TEMPERATURE received!");
+    snprintf(temp_buffer_f, sizeof(temp_buffer_f), "%d F", (int)temperature_t->value->int32);
+    text_layer_set_text(s_temp_layer, temp_buffer_f);
   }
   
   if (conditions_t) {
