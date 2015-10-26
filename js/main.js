@@ -52,7 +52,7 @@ function getAndStoreConfigData() {
 	var options = {
 		backgroundColor: $backgroundColorPicker.val(),
 		textColor: $textColorPicker.val(),
-		rotateLogo: $textColorPicker.val(),
+		rotateLogo: $rotateLogo.val(),
 		reflectBatt: $reflectBatt[0].checked,
 		showBattPct: $showBattPct[0].checked,
 		vibeDisconnect: $vibeDisconnect[0].checked,
