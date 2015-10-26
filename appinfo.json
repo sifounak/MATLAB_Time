@@ -25,27 +25,47 @@
             {
                 "file": "data/Logo_Animation.png",
                 "name": "LOGO_ANIMATION",
+                "targetPlatforms": [
+                    "basalt",
+                    "chalk"
+                ],
                 "type": "raw"
             },
             {
                 "file": "images/MATLAB_Icon.png",
                 "menuIcon": true,
                 "name": "MATLAB_ICON",
+                "targetPlatforms": [
+                    "basalt",
+                    "chalk"
+                ],
                 "type": "png"
             },
             {
                 "file": "fonts/MATLAB.ttf",
-                "name": "FONT_MATLAB_34",
+                "name": "FONT_MATLAB_14",
+                "targetPlatforms": [
+                    "basalt",
+                    "chalk"
+                ],
                 "type": "font"
             },
             {
                 "file": "fonts/MATLAB.ttf",
                 "name": "FONT_MATLAB_22",
+                "targetPlatforms": [
+                    "basalt",
+                    "chalk"
+                ],
                 "type": "font"
             },
             {
                 "file": "fonts/MATLAB.ttf",
-                "name": "FONT_MATLAB_14",
+                "name": "FONT_MATLAB_34",
+                "targetPlatforms": [
+                    "basalt",
+                    "chalk"
+                ],
                 "type": "font"
             }
         ]
@@ -56,7 +76,7 @@
         "basalt"
     ],
     "uuid": "cb332373-4ee5-4c5c-8912-4f62af2d756c",
-    "versionLabel": "0.5",
+    "versionLabel": "1.0",
     "watchapp": {
         "watchface": true
     }

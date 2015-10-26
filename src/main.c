@@ -9,16 +9,18 @@
 #define KEY_VIBE_ON_CONNECT 6
 #define KEY_TEMP_UNITS 7
 #define KEY_SHOW_CONDITIONS 8
-
 #define KEY_TEMPERATURE 9
 #define KEY_TEMPERATURE_IN_C 10
 #define KEY_CONDITIONS 11
 
 static Window *s_main_window;
-static TextLayer *s_time_layer, *s_date_layer, *s_charge_layer, *s_bluetooth_layer, *s_temp_layer, *s_conditions_layer;
-static GFont s_time_font, s_date_font, s_weather_font;
-static Layer *s_batt_layer, *s_static_layer, *s_weather_layer, *s_weather_layer_unanimated;
-static bool shake_for_weather = 0;
+static Layer *s_batt_bar_layer, *s_static_bar_layer, *s_info_layer;
+static TextLayer *s_time_layer, *s_date_layer, *s_charge_layer, *s_bluetooth_layer;
+static TextLayer *s_temp_layer, *s_conditions_layer, *s_batt_text_layer;
+static GFont s_time_font, s_date_font, s_info_font;
+static BitmapLayer *s_logo_bitmap_layer;
+static GBitmapSequence *s_logo_sequence = NULL;
+static GBitmap *s_logo_bitmap;
 
 static bool rotate_logo_minute = 0;
 static bool rotate_logo_hour = 0;
@@ -31,17 +33,12 @@ static bool show_temp = 1;
 static bool use_celsius = 0;
 static bool show_conditions = 1;
 
-static TextLayer *s_myweather_layer, *s_battery_text_layer;
-static GBitmap *s_background_bitmap, *s_logo_bitmap;
-static BitmapLayer *s_logo_bitmap_layer;
-static GBitmapSequence *s_logo_sequence = NULL;
-
 static char time_buffer[] = "00:00 AM";
 static char date_buffer[] = "WWW  MMM  DD";
+static char batt_buffer[] = "100%";
 
 static char temp_buffer_c[6], temp_buffer_f[6];
-static char conditions_buffer[20];
-static char weather_buffer[28];
+static char conditions_buffer[15];
 
 
 // =======================
@@ -96,13 +93,12 @@ static void bluetooth_handler(bool connected) {
 static void battery_text_layer_update() {  
   BatteryChargeState state = battery_state_service_peek();
   int pct = state.charge_percent;
-  static char batt_buffer[] = "100%";
   
   // Create batter string
   snprintf(batt_buffer,sizeof(batt_buffer),"%d%%",pct);
   
   // Display battery string
-  text_layer_set_text(s_battery_text_layer, batt_buffer);
+  text_layer_set_text(s_batt_text_layer, batt_buffer);
 }
 
 static void update_time() {
@@ -128,23 +124,21 @@ static void charge_handler() {
   
   if (charging == true) {
     layer_set_hidden(text_layer_get_layer(s_charge_layer), false);
-    layer_set_hidden(s_weather_layer, true);
-    //layer_set_hidden(s_weather_layer_unanimated, true);
+    layer_set_hidden(s_info_layer, true);
   } else {
     layer_set_hidden(text_layer_get_layer(s_charge_layer), true);
-    layer_set_hidden(s_weather_layer, false);
-    //layer_set_hidden(s_weather_layer_unanimated, false);
+    layer_set_hidden(s_info_layer, false);
   }
   battery_text_layer_update();
 }
 
 static void battery_handler(BatteryChargeState state) {
-  APP_LOG(APP_LOG_LEVEL_INFO, "Battery change registered!");
-  layer_mark_dirty(s_batt_layer);
+  //APP_LOG(APP_LOG_LEVEL_INFO, "Battery change registered!");
+  layer_mark_dirty(s_batt_bar_layer);
   charge_handler();
 }
 
-static void batt_layer_draw(Layer *layer, GContext *ctx) {  
+static void batt_bar_layer_draw(Layer *layer, GContext *ctx) {  
   BatteryChargeState state = battery_state_service_peek();
   int pct = state.charge_percent;
   
@@ -172,10 +166,10 @@ static void static_layer_draw(Layer *layer, GContext *ctx) {
   graphics_fill_rect(ctx, GRect(2, 127, 140, 2), 0, GCornerNone); // Draw static bar
 }
 
-static void update_info_layers() {
+static void update_info_layer() {
   layer_set_hidden(text_layer_get_layer(s_temp_layer), false);
   layer_set_hidden(text_layer_get_layer(s_conditions_layer), false);
-  layer_set_hidden(text_layer_get_layer(s_battery_text_layer), false);
+  layer_set_hidden(text_layer_get_layer(s_batt_text_layer), false);
   if (show_temp == 0) {
     layer_set_hidden(text_layer_get_layer(s_temp_layer), true );
   }
@@ -183,12 +177,12 @@ static void update_info_layers() {
     layer_set_hidden(text_layer_get_layer(s_conditions_layer), true );
   }
   if (show_batt_pct == 0) {
-    layer_set_hidden(text_layer_get_layer(s_battery_text_layer), true );
+    layer_set_hidden(text_layer_get_layer(s_batt_text_layer), true );
   }
   
   text_layer_set_text_alignment(s_temp_layer        , GTextAlignmentLeft  );
   text_layer_set_text_alignment(s_conditions_layer  , GTextAlignmentCenter);
-  text_layer_set_text_alignment(s_battery_text_layer, GTextAlignmentRight );
+  text_layer_set_text_alignment(s_batt_text_layer, GTextAlignmentRight );
   if (show_conditions + show_batt_pct < 1) {
     text_layer_set_text_alignment(s_temp_layer, GTextAlignmentCenter);
   }
@@ -198,7 +192,7 @@ static void update_info_layers() {
     text_layer_set_text_alignment(s_conditions_layer, GTextAlignmentLeft );
   }
   if (show_temp + show_conditions < 1) {
-    text_layer_set_text_alignment(s_battery_text_layer, GTextAlignmentCenter);
+    text_layer_set_text_alignment(s_batt_text_layer, GTextAlignmentCenter);
   }
 }
 
@@ -210,7 +204,7 @@ static void set_text_color(int color) {
   text_layer_set_text_color(s_conditions_layer, text_color);
   text_layer_set_text_color(s_charge_layer, text_color);
   text_layer_set_text_color(s_bluetooth_layer, text_color);
-  text_layer_set_text_color(s_battery_text_layer, text_color);
+  text_layer_set_text_color(s_batt_text_layer, text_color);
 }
 
 static void set_background_color(int bgcolor) {
@@ -218,8 +212,21 @@ static void set_background_color(int bgcolor) {
   window_set_background_color(s_main_window, bg_color);
 }
 
+static void request_weather() {
+  // Begin dictionary
+  DictionaryIterator *iter;
+  app_message_outbox_begin(&iter);
+
+  // Add a key-value pair
+  dict_write_uint8(iter, 0, 0);
+
+  // Send the message!
+  app_message_outbox_send();
+}
+
 static void inbox_received_handler(DictionaryIterator *iter, void *context) {
-  bool update_info_layers_flag = false;
+  bool update_info_layer_flag = false;
+  bool update_weather_info = false;
   
   Tuple *background_color_t = dict_find(iter, KEY_BACKGROUND_COLOR);
   Tuple *text_color_t = dict_find(iter, KEY_TEXT_COLOR);
@@ -270,24 +277,24 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
   // Parse option to make the battery bar reflect the battery percentage
   if (reflect_batt_t) {
     //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_REFLECT_BATT received!");
-    update_info_layers_flag = true;
+    update_info_layer_flag = true;
     
     reflect_batt = reflect_batt_t->value->int8;
     persist_write_int(KEY_REFLECT_BATT, reflect_batt);
     
     if (reflect_batt == 1) {
-      layer_set_hidden(s_static_layer, true);
-      layer_set_hidden(s_batt_layer, false);
+      layer_set_hidden(s_static_bar_layer, true);
+      layer_set_hidden(s_batt_bar_layer, false);
     } else {
-      layer_set_hidden(s_static_layer, false);
-      layer_set_hidden(s_batt_layer, true);
+      layer_set_hidden(s_static_bar_layer, false);
+      layer_set_hidden(s_batt_bar_layer, true);
     }
   }
   
   // Parse option to show battery percentage text
   if (show_batt_pct_t) {
     //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_SHOW_BATT_PCT received!");
-    update_info_layers_flag = true;
+    update_info_layer_flag = true;
     
     show_batt_pct = show_batt_pct_t->value->int8;
     persist_write_int(KEY_SHOW_BATT_PCT, show_batt_pct);
@@ -308,7 +315,8 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
   // Parse temperature settings
   if (temp_units_t) {
     //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_TEMP_UNITS received!");
-    update_info_layers_flag = true;
+    update_info_layer_flag = true;
+    update_weather_info = true;
     
     int temp_units_val = temp_units_t->value->int8;
     persist_write_int(KEY_TEMP_UNITS, temp_units_val);
@@ -328,7 +336,8 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
   // Parse for option to show weather conditions
   if (show_conditions_t) {
     //APP_LOG(APP_LOG_LEVEL_INFO, "KEY_SHAKE_FOR_WEATHER received!");
-    update_info_layers_flag = true;
+    update_info_layer_flag = true;
+    update_weather_info = true;
     
     show_conditions = show_conditions_t->value->int8;
     persist_write_int(KEY_SHOW_CONDITIONS, show_conditions);
@@ -356,17 +365,21 @@ static void inbox_received_handler(DictionaryIterator *iter, void *context) {
     }
   }
   
-  if (update_info_layers_flag) {
-    update_info_layers();
+  if (update_info_layer_flag) {
+    update_info_layer();
+  }
+  
+  if (update_weather_info) {
+    request_weather();
   }
   
 }
 
 static void main_window_load(Window *window) {
   // Custom fonts
-  s_time_font    = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_MATLAB_34));
-  s_date_font    = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_MATLAB_22));
-  s_weather_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_MATLAB_14));
+  s_time_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_MATLAB_34));
+  s_date_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_MATLAB_22));
+  s_info_font = fonts_load_custom_font(resource_get_handle(RESOURCE_ID_FONT_MATLAB_14));
   
   // MATLAB logo
   s_logo_sequence     = gbitmap_sequence_create_with_resource(RESOURCE_ID_LOGO_ANIMATION);
@@ -374,26 +387,18 @@ static void main_window_load(Window *window) {
   s_logo_bitmap_layer = bitmap_layer_create(GRect(27, 2, 90, 95));
   bitmap_layer_set_compositing_mode(s_logo_bitmap_layer, GCompOpSet);
   load_first_image();
-  layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_logo_bitmap_layer));
   
-  // Weather parent layers
-  s_weather_layer = layer_create(GRect(0, 0, 144, 168));
-  s_weather_layer_unanimated = layer_create(GRect(0, 0, 144, 168));
-  
-  // Battery bar
-  s_batt_layer = layer_create(GRect(0, 0, 144, 168));
-  layer_set_update_proc(s_batt_layer, batt_layer_draw);
-  
-  // Static bar
-  s_static_layer = layer_create(GRect(0, 0, 144, 168));
-  layer_set_update_proc(s_static_layer, static_layer_draw);
+  // Horizontal bar (battery and static)
+  s_batt_bar_layer = layer_create(GRect(0, 0, 144, 168));
+  layer_set_update_proc(s_batt_bar_layer, batt_bar_layer_draw);
+  s_static_bar_layer = layer_create(GRect(0, 0, 144, 168));
+  layer_set_update_proc(s_static_bar_layer, static_layer_draw);
   
   // Time layer
   s_time_layer = text_layer_create(GRect(0, 90, 144, 168));
   text_layer_set_background_color(s_time_layer, GColorClear);
   text_layer_set_font(s_time_layer, s_time_font);
   text_layer_set_text_alignment(s_time_layer, GTextAlignmentCenter);
-  //text_layer_set_text(s_time_layer, "12:34");
   
   // Date layer
   s_date_layer = text_layer_create(GRect(0, 126, 144, 168));
@@ -404,53 +409,46 @@ static void main_window_load(Window *window) {
   // Charging status
   s_charge_layer = text_layer_create(GRect(0, 150, 144, 14));
   text_layer_set_background_color(s_charge_layer, GColorClear);
-  text_layer_set_font(s_charge_layer, s_weather_font);
+  text_layer_set_font(s_charge_layer, s_info_font);
   text_layer_set_text_alignment(s_charge_layer, GTextAlignmentCenter);
   text_layer_set_text(s_charge_layer, "...CHARGING...");
   layer_set_hidden(text_layer_get_layer(s_charge_layer), true);
-
+  
   // Bluetooth status
   s_bluetooth_layer = text_layer_create(GRect(0, 0, 144, 14));
   text_layer_set_background_color(s_bluetooth_layer, GColorClear);
-  text_layer_set_font(s_bluetooth_layer, s_weather_font);
+  text_layer_set_font(s_bluetooth_layer, s_info_font);
   text_layer_set_text_alignment(s_bluetooth_layer, GTextAlignmentLeft);
   text_layer_set_text(s_bluetooth_layer, "BT OFF!");
-
-
+  
+  // Info parent layer
+  s_info_layer = layer_create(GRect(0, 0, 144, 168));
+  
   // Temperature
-  //s_temp_layer = text_layer_create(GRect(0, 182, 144, 14));
   s_temp_layer = text_layer_create(GRect(0, 150, 144, 14));
   text_layer_set_background_color(s_temp_layer, GColorClear);
-  text_layer_set_font(s_temp_layer, s_weather_font);
+  text_layer_set_font(s_temp_layer, s_info_font);
   text_layer_set_text_alignment(s_temp_layer, GTextAlignmentLeft);
-
+  
   // Conditions
-  //s_conditions_layer = text_layer_create(GRect(0, 182, 144, 14));
   s_conditions_layer = text_layer_create(GRect(0, 150, 144, 14));
-  text_layer_set_font(s_conditions_layer, s_weather_font);
+  text_layer_set_font(s_conditions_layer, s_info_font);
   text_layer_set_background_color(s_conditions_layer, GColorClear);
   text_layer_set_text_alignment(s_conditions_layer, GTextAlignmentCenter);
   
   // Battery text
-  s_battery_text_layer = text_layer_create(GRect(0, 150, 144, 14));
-  text_layer_set_background_color(s_battery_text_layer, GColorClear);
-  text_layer_set_font(s_battery_text_layer, s_weather_font);
-  text_layer_set_text_alignment(s_battery_text_layer, GTextAlignmentRight);
-  text_layer_set_text(s_battery_text_layer, "100%");
-  
-  // My weather layer
-  /*
-  s_myweather_layer = text_layer_create(GRect(0, 150, 144, 14));
-  text_layer_set_font(s_myweather_layer, s_weather_font);
-  text_layer_set_background_color(s_myweather_layer, GColorClear);
-  text_layer_set_text_alignment(s_myweather_layer, GTextAlignmentLeft);
-  */
+  s_batt_text_layer = text_layer_create(GRect(0, 150, 144, 14));
+  text_layer_set_background_color(s_batt_text_layer, GColorClear);
+  text_layer_set_font(s_batt_text_layer, s_info_font);
+  text_layer_set_text_alignment(s_batt_text_layer, GTextAlignmentRight);
+  text_layer_set_text(s_batt_text_layer, "100%");
   
   /* Add children */
-
+  
   // Main elements
-  layer_add_child(window_get_root_layer(window), s_batt_layer);
-  layer_add_child(window_get_root_layer(window), s_static_layer);
+  layer_add_child(window_get_root_layer(window), bitmap_layer_get_layer(s_logo_bitmap_layer));
+  layer_add_child(window_get_root_layer(window), s_batt_bar_layer);
+  layer_add_child(window_get_root_layer(window), s_static_bar_layer);
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_time_layer));
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_date_layer));
 
@@ -458,18 +456,11 @@ static void main_window_load(Window *window) {
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_charge_layer));
   layer_add_child(window_get_root_layer(window), text_layer_get_layer(s_bluetooth_layer));
 
-  // Weather elements
-  layer_add_child(window_get_root_layer(window), s_weather_layer);
-  layer_add_child(s_weather_layer, text_layer_get_layer(s_temp_layer));
-  layer_add_child(s_weather_layer, text_layer_get_layer(s_conditions_layer));
-  
-  //layer_add_child(s_weather_layer_unanimated, text_layer_get_layer(s_myweather_layer));
-  layer_add_child(s_weather_layer, text_layer_get_layer(s_battery_text_layer));
-  
-  
-  // Update procedure for logo
-  load_first_image();
-  
+  // Info elements
+  layer_add_child(window_get_root_layer(window), s_info_layer);
+  layer_add_child(s_info_layer, text_layer_get_layer(s_temp_layer));
+  layer_add_child(s_info_layer, text_layer_get_layer(s_conditions_layer));
+  layer_add_child(s_info_layer, text_layer_get_layer(s_batt_text_layer));
   
 
   // Check for existing keys
@@ -508,16 +499,16 @@ static void main_window_load(Window *window) {
     reflect_batt = persist_read_int(KEY_REFLECT_BATT);
     
     if (reflect_batt == 1) {
-      layer_set_hidden(s_static_layer, true);
-      layer_set_hidden(s_batt_layer, false);
+      layer_set_hidden(s_static_bar_layer, true);
+      layer_set_hidden(s_batt_bar_layer, false);
     } else {
-      layer_set_hidden(s_static_layer, false);
-      layer_set_hidden(s_batt_layer, true);
+      layer_set_hidden(s_static_bar_layer, false);
+      layer_set_hidden(s_batt_bar_layer, true);
     }
     
   } else {
-    layer_set_hidden(s_static_layer, true);
-    layer_set_hidden(s_batt_layer, false);
+    layer_set_hidden(s_static_bar_layer, true);
+    layer_set_hidden(s_batt_bar_layer, false);
   }
   
   if (persist_exists(KEY_SHOW_BATT_PCT)) {
@@ -552,7 +543,7 @@ static void main_window_load(Window *window) {
     }
   }
   
-  update_info_layers();
+  update_info_layer();
   charge_handler();
   update_time();
 }
@@ -561,23 +552,25 @@ static void main_window_unload(Window *window) {
   text_layer_destroy(s_time_layer);
   text_layer_destroy(s_date_layer);
   text_layer_destroy(s_charge_layer);
-  text_layer_destroy(s_conditions_layer);
+  text_layer_destroy(s_bluetooth_layer);
   text_layer_destroy(s_temp_layer);
-  layer_destroy(s_batt_layer);
-  layer_destroy(s_weather_layer);
-  text_layer_destroy(s_myweather_layer);
-  text_layer_destroy(s_battery_text_layer);
-  
-  gbitmap_destroy(s_background_bitmap);
-  bitmap_layer_destroy(s_logo_bitmap_layer);
-  gbitmap_sequence_destroy(s_logo_sequence);
-  gbitmap_destroy(s_logo_bitmap);
+  text_layer_destroy(s_conditions_layer);
+  text_layer_destroy(s_batt_text_layer);
 
   fonts_unload_custom_font(s_time_font);
   fonts_unload_custom_font(s_date_font);
-  fonts_unload_custom_font(s_weather_font);
+  fonts_unload_custom_font(s_info_font);
+  
+  layer_destroy(s_batt_bar_layer);
+  layer_destroy(s_static_bar_layer);
+  layer_destroy(s_info_layer);
+  
+  bitmap_layer_destroy(s_logo_bitmap_layer);
+  gbitmap_sequence_destroy(s_logo_sequence);
+  gbitmap_destroy(s_logo_bitmap);
+  
+  window_destroy(s_main_window);
 }
-
 
 static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   update_time();
@@ -585,15 +578,7 @@ static void tick_handler(struct tm *tick_time, TimeUnits units_changed) {
   if ((show_temp == 1) | (show_conditions == 1)) {
     // Update weather every 15 minutes
     if(tick_time->tm_min % 15 == 0) {
-      // Begin dictionary
-      DictionaryIterator *iter;
-      app_message_outbox_begin(&iter);
-      
-      // Add a key-value pair
-      dict_write_uint8(iter, 0, 0);
-      
-      // Send the message!
-      app_message_outbox_send();
+      request_weather();
     }
   }
   
