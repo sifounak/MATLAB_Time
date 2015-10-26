@@ -27,8 +27,8 @@ function loadOptions() {
 	
 	if(localStorage.backgroundColor) {
 		$backgroundColorPicker[0].value = localStorage.backgroundColor;
-		$textColorPicker[0].value = localStorage;
-		$rotateLogo[0].value = localStorage.rotateLogo.toString();
+		$textColorPicker[0].value = localStorage.textColor;
+		$rotateLogo[0].value = localStorage.rotateLogo;
 		$reflectBatt[0].checked = localStorage.reflectBatt === 'true';
 		$showBattPct[0].checked = localStorage.showBattPct === 'true';
 		$vibeDisconnect[0].checked = localStorage.vibeDisconnect === 'true';
