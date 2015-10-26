@@ -17,60 +17,48 @@ function submitHandler() {
 function loadOptions() {
 	var $textColorPicker = $('#textColorPicker');
 	var $backgroundColorPicker = $('#backgroundColorPicker');
-	var $invertColors = $('#invertColors');
-	var $showWeather = $('#showWeather');
-	var $shakeWeather = $('#shakeWeather');
-	var $useCelsius = $('#useCelsius');
+	var $rotateLogo = $('#rotateLogo');
+	var $reflectBatt = $('#reflectBatt');
+	var $showBattPct = $('#showBattPct');
 	var $vibeConnect = $('#vibeConnect');
 	var $vibeDisconnect = $('#vibeDisconnect');
-	var $reflectBatt = $('#reflectBatt');
-
-	if (localStorage.invertColors) {
-		$textColorPicker[0].value = localStorage.textColor;
-		$backgroundColorPicker[0].value = localStorage.backgroundColor;
-		$invertColors[0].checked = localStorage.invertColors === 'true';
-		$showWeather[0].checked = localStorage.showWeather === 'true';
-		$shakeWeather[0].checked = localStorage.shakeWeather === 'true';
-		$useCelsius[0].checked = localStorage.useCelsius === 'true';
-		$vibeConnect[0].checked = localStorage.vibeConnect === 'true';
-		$vibeDisconnect[0].checked = localStorage.vibeDisconnect === 'true';
-		$reflectBatt[0].checked = localStorage.reflectBatt === 'true';
-	}
+	var $tempUnits = $('#tempUnits');
+	var $showConditions = $('#showConditions');
 }
 
 function getAndStoreConfigData() {
 	var $textColorPicker = $('#textColorPicker');
 	var $backgroundColorPicker = $('#backgroundColorPicker');
-	var $invertColors = $('#invertColors');
-	var $showWeather = $('#showWeather');
-	var $shakeWeather = $('#shakeWeather');
-	var $useCelsius = $('#useCelsius');
+	var $rotateLogo = $('#rotateLogo');
+	var $reflectBatt = $('#reflectBatt');
+	var $showBattPct = $('#showBattPct');
 	var $vibeConnect = $('#vibeConnect');
 	var $vibeDisconnect = $('#vibeDisconnect');
-	var $reflectBatt = $('#reflectBatt');
+	var $tempUnits = $('#tempUnits');
+	var $showConditions = $('#showConditions');
 
 	var options = {
-		textColor: $textColorPicker.val(),
 		backgroundColor: $backgroundColorPicker.val(),
-		invertColors: $invertColors[0].checked,
-		showWeather: $showWeather[0].checked,
-		shakeWeather: $shakeWeather[0].checked,
-		useCelsius: $useCelsius[0].checked,
-		vibeConnect: $vibeConnect[0].checked,
+		textColor: $textColorPicker.val(),
+		rotateLogo: $textColorPicker.val(),
+		reflectBatt: $reflectBatt[0].checked,
+		showBattPct: $showBattPct[0].checked,
 		vibeDisconnect: $vibeDisconnect[0].checked,
-		reflectBatt: $reflectBatt[0].checked
+		vibeConnect: $vibeConnect[0].checked,
+		tempUnits: $tempUnits.val(),
+		showConditions: $showConditions[0].checked
 	};
-
-	localStorage.textColor = options.textColor;
+	
 	localStorage.backgroundColor = options.backgroundColor;
-	localStorage.invertColors = options.invertColors;
-	localStorage.showWeather = options.showWeather;
-	localStorage.shakeWeather = options.shakeWeather;
-	localStorage.useCelsius = options.useCelsius;
-	localStorage.vibeConnect = options.vibeConnect;
-	localStorage.vibeDisconnect = options.vibeDisconnect;
+	localStorage.textColor = options.textColor;
+	localStorage.rotateLogo = options.rotateLogo;
 	localStorage.reflectBatt = options.reflectBatt;
-
+	localStorage.showBattPct = options.showBattPct;
+	localStorage.vibeDisconnect = options.vibeDisconnect;
+	localStorage.vibeConnect = options.vibeConnect;
+	localStorage.tempUnits = options.tempUnits;
+	localStorage.showConditions = options.showConditions;
+	
 	console.log('Got options: ' + JSON.stringify(options));
 	return options;
 }

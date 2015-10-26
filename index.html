@@ -8,77 +8,86 @@
 </head>
 <body>
 	<h1 class='title'>MATLAB Time</h1>
-
+	
 	<div class='item-container'>
+		<div class='item-container-header'>Color Settings</div>
 		<div class='item-container-content'>
 			<label class='item'>
-				Weather
-				<input id='showWeather' type='checkbox' class='item-toggle' name='toggle-1' checked>
-			</label>
-			<label class='item'>
-				Use Celsius
-				<input id='useCelsius' type='checkbox' class='item-checkbox'>
-			</label>
-
-			<label class='item'>
-				Shake for weather
-				<input id='shakeWeather' type='checkbox' class='item-checkbox'>
-			</label>
-		</div>
-	</div>
-
-	<div class='item-container'>
-		<div class='item-container-content'>
-			<label class='item'>
-				Vibrate on Bluetooth Reconnect
-				<input id='vibeConnect' type='checkbox' class='item-toggle' name='toggle-1' checked>
-			</label>
-			<label class='item'>
-				Vibrate on Bluetooth Disconnect
-				<input id='vibeDisconnect' type='checkbox' class='item-toggle' name='toggle-1' checked>
-			</label>
-		</div>
-	</div>
-
-	<div class='item-container'>
-		<div class='item-container-content'>
-			<label class='item'>
-				Bar shows battery level
-				<input id='reflectBatt' type='checkbox' class='item-checkbox' checked>
-			</label>
-		</div>
-	</div>
-
-	<div class='item-container'>
-		<div class='item-container-header'>Pebble Time and Pebble Time Steel</div>
-		<div class='item-container-content'>
-			<label class='item'>
-				Text Colour
-				<input id='textColorPicker' type='text' class='item-color item-color-sunny' value='0xFFFFFF'>
-			</label>
-			<label class='item'>
-				Background Colour
+				Background Color
 				<input id='backgroundColorPicker' type='text' class='item-color item-color-sunny' value='0x000000'>
 			</label>
-		</div>
-	</div>
-
-	<div class='item-container'>
-		<div class='item-container-header'>Pebble and Pebble Steel</div>
-		<div class='item-container-content'>
 			<label class='item'>
-				Invert
-				<input id='invertColors' type='checkbox' class='item-checkbox'>
+				Text Color
+				<input id='textColorPicker' type='text' class='item-color item-color-sunny' value='0xFFFFFF'>
 			</label>
 		</div>
 	</div>
-
+	
+	<div class='item-container'>
+		<div class='item-container-header'>Logo Settings</div>
+		<div class="ui-field-contain">
+			<label for="select-native-4">Rotate Logo</label>
+			<select name="temp_type" id="temp_type">
+				<option value="0">Off</option>
+				<option value="1">Every Minute</option>
+				<option value="2">Every Hour</option>
+				<option value="3">On Shake</option>
+			</select>
+		</div>
+	</div>
+	
+	<div class='item-container'>
+	<div class='item-container-header'>Battery Settings</div>
+		<div class='item-container-content'>
+			<label class='item'>
+				Bar Reflects Battery Level
+				<input id='reflectBatt' type='checkbox' class='item-checkbox' checked>
+			</label>
+			<label class='item'>
+				Show Battery Percentage
+				<input id='showBattPct' type='checkbox' class='item-checkbox' checked>
+			</label>
+		</div>
+	</div>
+	
+	<div class='item-container'>
+	<div class='item-container-header'>Connection Settings</div>
+		<div class='item-container-content'>
+			<label class='item'>
+				Vibrate on Bluetooth Disconnect
+				<input id='vibeDisconnect' type='checkbox' class='item-checkbox' name='item-checkbox-vibDisconnect' checked>
+			</label>
+			<label class='item'>
+				Vibrate on Bluetooth Reconnect
+				<input id='vibeConnect' type='checkbox' class='item-checkbox' name='item-checkbox-vibeConnect' checked>
+			</label>
+		</div>
+	</div>
+	
+	<div class='item-container-header'>Weather Settings</div>
+	<div class='item-container'>
+		<div class="ui-field-contain">
+			<label for="select-native-2">Show Temperature</label>
+			<select name="tempUnits" id="temp_type">
+				<option value="0">Off</option>
+				<option value="1">In Celsius</option>
+				<option value="2">In Fahrenheit</option>
+			</select>
+		</div>
+		<div class='item-container-content'>
+			<label class='item'>
+				Show Weather Conditions Text
+				<input id='showConditions' type='checkbox' class='item-checkbox' name='item-checkbox-conditions' checked>
+			</label>
+		</div>
+	</div>
+	
 	<div class='item-container'>
 		<div class='button-container'>
 			<input id='submitButton' type='button' class='item-button' value='SAVE'>
 		</div>
 	</div>
-
+	
 	<div id='foot' class='item-container'>
 		<div class='item-container-footer'>
 			<div class='item'>
